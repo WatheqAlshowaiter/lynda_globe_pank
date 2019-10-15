@@ -9,6 +9,7 @@
   <body>
 
     <h1>Globe Bank: Coming Soon</h1>
+    <a href="staff/">staff area</a>
 
   </body>
 </html>
