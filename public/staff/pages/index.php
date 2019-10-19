@@ -26,9 +26,10 @@ $page_set  = find_all_pages();
 
       </tr>
       <?php while ($page  = mysqli_fetch_assoc($page_set)) { ?>
+        <?php $subject = find_subject_by_id($page['subject_id']);?> 
         <tr>
           <td><?php echo h($page['id']); ?> </td>
-          <td><?php echo h($page['subject_id']); ?> </td>
+          <td><?php echo h($subject['menu_name']); ?> </td>
           <td><?php echo h($page['position']); ?> </td>
           <td><?php echo $page['visible'] == 1 ? 'true' : 'false'; ?> </td>
           <td><?php echo h($page['menu_name']); ?> </td>
