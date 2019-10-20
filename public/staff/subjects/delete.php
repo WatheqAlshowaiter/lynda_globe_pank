@@ -1,42 +1,41 @@
 <?php
+
 require_once('../../../private/initialize.php');
-?>
 
-
-<?php
-if (!isset($_GET['id'])) {
-    redirect_to(url_for('/staff/subjects/index.php'));
+if(!isset($_GET['id'])) {
+  redirect_to(url_for('/staff/subjects/index.php'));
 }
-
 $id = $_GET['id'];
 
+if(is_post_request()) {
 
-if (is_post_request()) {
-    $result = delete_subject($id);
-    redirect_to(url_for("staff/subjects/index.php"));
+  $result = delete_subject($id);
+  redirect_to(url_for('/staff/subjects/index.php'));
+
 } else {
-    $subject = find_subject_by_id($id);
+  $subject = find_subject_by_id($id);
 }
+
 ?>
 
-<?php $page_title = 'Delete Subject: ' . $subject["menu_name"]; ?>
+<?php $page_title = 'Delete Subject'; ?>
 <?php include(SHARED_PATH . '/staff_header.php'); ?>
 
 <div id="content">
 
-    <a class="back-link" href="<?php echo url_for('/staff/subjects/index.php'); ?>">&laquo; Back to List</a>
+  <a class="back-link" href="<?php echo url_for('/staff/subjects/index.php'); ?>">&laquo; Back to List</a>
 
-    <div class="subject edit">
-        <h1>Delet Subject <?php echo $subject["menu_name"] ?> </h1>
+  <div class="subject delete">
+    <h1>Delete Subject</h1>
+    <p>Are you sure you want to delete this subject?</p>
+    <p class="item"><?php echo h($subject['menu_name']); ?></p>
 
-        <form action="" method="post">
-            <p>Are you sure you want to delete subject: [<?php echo $subject["menu_name"]; ?>]?</p>
-            <div id="operations">
-                <input type="submit" value="Delete Subject" />
-            </div>
-        </form>
-
-    </div>
+    <form action="<?php echo url_for('/staff/subjects/delete.php?id=' . h(u($subject['id']))); ?>" method="post">
+      <div id="operations">
+        <input type="submit" name="commit" value="Delete Subject" />
+      </div>
+    </form>
+  </div>
 
 </div>
 
