@@ -19,7 +19,7 @@ function find_subject_by_id($id)
   global $db;
 
   $sql = "SELECT * FROM subjects ";
-  $sql .= "WHERE id='" . $id . "'";
+  $sql .= "WHERE id='" . escape_db($db, $id) . "'";
   $result = mysqli_query($db, $sql);
   confirm_result_set($result);
   $subject = mysqli_fetch_assoc($result);
@@ -37,7 +37,7 @@ function validate_subject($subject)
   } elseif (!has_length($subject['menu_name'], ['min' => 2, 'max' => 255])) {
     $errors[] = "Name must be between 2 and 255 characters.";
   }
-  
+
   // position
   // Make sure we are working with an integer
   $postion_int = (int) $subject['position'];
@@ -70,9 +70,9 @@ function insert_subject($subject)
   $sql = "INSERT INTO subjects ";
   $sql .= "(menu_name, position, visible) ";
   $sql .= "VALUES (";
-  $sql .= "'" . $subject['menu_name'] . "',";
-  $sql .= "'" . $subject['position'] . "',";
-  $sql .= "'" . $subject['visible'] . "'";
+  $sql .= "'" . escape_db($db, $subject['menu_name']) . "',";
+  $sql .= "'" . escape_db($db, $subject['position']) . "',";
+  $sql .= "'" . escape_db($db, $subject['visible']) . "'";
   $sql .= ")";
   $result = mysqli_query($db, $sql);
   // For INSERT statements, $result is true/false
@@ -96,10 +96,10 @@ function update_subject($subject)
   }
 
   $sql = "UPDATE subjects SET ";
-  $sql .= "menu_name='" . $subject['menu_name'] . "', ";
-  $sql .= "position='" . $subject['position'] . "', ";
-  $sql .= "visible='" . $subject['visible'] . "' ";
-  $sql .= "WHERE id='" . $subject['id'] . "' ";
+  $sql .= "menu_name='" . escape_db($db, $subject['menu_name']) . "', ";
+  $sql .= "position='" . escape_db($db, $subject['position']) . "', ";
+  $sql .= "visible='" . escape_db($db, $subject['visible']) . "' ";
+  $sql .= "WHERE id='" . escape_db($db, $subject['id']) . "' ";
   $sql .= "LIMIT 1";
 
   $result = mysqli_query($db, $sql);
@@ -119,7 +119,7 @@ function delete_subject($id)
   global $db;
 
   $sql = "DELETE FROM subjects ";
-  $sql .= "WHERE id='" . $id . "' ";
+  $sql .= "WHERE id='" . escape_db($db, $id) . "' ";
   $sql .= "LIMIT 1";
   $result = mysqli_query($db, $sql);
 
@@ -152,7 +152,7 @@ function find_page_by_id($id)
   global $db;
 
   $sql = "SELECT * FROM pages ";
-  $sql .= "WHERE id='" . $id . "'";
+  $sql .= "WHERE id='" . escape_db($db, $id) . "'";
   $result = mysqli_query($db, $sql);
   confirm_result_set($result);
   $page = mysqli_fetch_assoc($result);
@@ -177,9 +177,9 @@ function validate_page($page)
   }
   $current_id =  $page['id'] ?? '0';
 
-  if (!has_unique_page_menu_name($page['menu_name'], $current_id)) {
-    $errors[] = "Menu name must be unique";
-  }
+  // if (!has_unique_page_menu_name($page['menu_name'], $current_id)) {
+  //   $errors[] = "Menu name must be unique";
+  // }
 
   // position
   // Make sure we are working with an integer
@@ -218,11 +218,11 @@ function insert_page($page)
   $sql = "INSERT INTO pages ";
   $sql .= "(subject_id, menu_name, position, visible, content) ";
   $sql .= "VALUES (";
-  $sql .= "'" . $page['subject_id'] . "',";
-  $sql .= "'" . $page['menu_name'] . "',";
-  $sql .= "'" . $page['position'] . "',";
-  $sql .= "'" . $page['visible'] . "',";
-  $sql .= "'" . $page['content'] . "'";
+  $sql .= "'" . escape_db($db, $page['subject_id']) . "',";
+  $sql .= "'" . escape_db($db, $page['menu_name']). "',";
+  $sql .= "'" . escape_db($db, $page['position'] ). "',";
+  $sql .= "'" . escape_db($db, $page['visible']) . "',";
+  $sql .= "'" . escape_db($db, $page['content']) . "'";
   $sql .= ")";
   $result = mysqli_query($db, $sql);
   // For INSERT statements, $result is true/false
@@ -246,12 +246,12 @@ function update_page($page)
   }
 
   $sql = "UPDATE pages SET ";
-  $sql .= "subject_id='" . $page['subject_id'] . "', ";
-  $sql .= "menu_name='" . $page['menu_name'] . "', ";
-  $sql .= "position='" . $page['position'] . "', ";
-  $sql .= "visible='" . $page['visible'] . "', ";
-  $sql .= "content='" . $page['content'] . "' ";
-  $sql .= "WHERE id='" . $page['id'] . "' ";
+  $sql .= "subject_id='" . escape_db($db, $page['subject_id']) . "', ";
+  $sql .= "menu_name='" . escape_db($db, $page['menu_name'] ). "', ";
+  $sql .= "position='" . escape_db($db, $page['position']) . "', ";
+  $sql .= "visible='" . escape_db($db, $page['visible']) . "', ";
+  $sql .= "content='" . escape_db($db, $page['content']) . "' ";
+  $sql .= "WHERE id='" . escape_db($db, $page['id']) . "' ";
   $sql .= "LIMIT 1";
 
   $result = mysqli_query($db, $sql);
@@ -271,7 +271,7 @@ function delete_page($id)
   global $db;
 
   $sql = "DELETE FROM pages ";
-  $sql .= "WHERE id='" . $id . "' ";
+  $sql .= "WHERE id='" . escape_db($db, $id) . "' ";
   $sql .= "LIMIT 1";
   $result = mysqli_query($db, $sql);
 

@@ -42,4 +42,16 @@ function confirm_result_set($result_set)
 		exit("<p>Database Query Failed.</p>");
 	}
 }
+/**
+ * do the same of mysqli real escape string but small name 
+ *
+ * @param mysqli $connection
+ * @param string $string
+ * @return srting
+ */
+function escape_db($connection, $string){
+	return mysqli_real_escape_string($connection, $string); 
+}
+
+
 ?> 

@@ -20,11 +20,15 @@ if(is_post_request()) {
   }
 
 } else {
+   // to make the default of pages position is the last one 
+  $page_set = find_all_pages();
+  $page_count = mysqli_num_rows($page_set) + 1;
+  mysqli_free_result($page_set);
 
   $page = [];
   $page['subject_id'] = '';
   $page['menu_name'] = '';
-  $page['position'] = '';
+  $page['position'] = $page_count;
   $page['visible'] = '';
   $page['content'] = '';
 
