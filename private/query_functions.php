@@ -219,8 +219,8 @@ function insert_page($page)
   $sql .= "(subject_id, menu_name, position, visible, content) ";
   $sql .= "VALUES (";
   $sql .= "'" . escape_db($db, $page['subject_id']) . "',";
-  $sql .= "'" . escape_db($db, $page['menu_name']). "',";
-  $sql .= "'" . escape_db($db, $page['position'] ). "',";
+  $sql .= "'" . escape_db($db, $page['menu_name']) . "',";
+  $sql .= "'" . escape_db($db, $page['position']) . "',";
   $sql .= "'" . escape_db($db, $page['visible']) . "',";
   $sql .= "'" . escape_db($db, $page['content']) . "'";
   $sql .= ")";
@@ -247,7 +247,7 @@ function update_page($page)
 
   $sql = "UPDATE pages SET ";
   $sql .= "subject_id='" . escape_db($db, $page['subject_id']) . "', ";
-  $sql .= "menu_name='" . escape_db($db, $page['menu_name'] ). "', ";
+  $sql .= "menu_name='" . escape_db($db, $page['menu_name']) . "', ";
   $sql .= "position='" . escape_db($db, $page['position']) . "', ";
   $sql .= "visible='" . escape_db($db, $page['visible']) . "', ";
   $sql .= "content='" . escape_db($db, $page['content']) . "' ";
@@ -284,4 +284,21 @@ function delete_page($id)
     db_disconnect($db);
     exit;
   }
+}
+
+/**
+ * find pages conected with subjects
+ *
+ * @param int $subject_id
+ * @return result set
+ */
+function find_pages_by_subject_id($subject_id)
+{
+  global $db;
+
+  $sql = "SELECT * FROM pages ";
+  $sql .= "WHERE subject_id ='" . escape_db($db, $subject_id) . "'";
+  $result = mysqli_query($db, $sql);
+  confirm_result_set($result);
+  return $result; // return a result set
 }
