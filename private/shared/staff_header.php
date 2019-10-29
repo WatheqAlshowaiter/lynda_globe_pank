@@ -16,6 +16,9 @@
 
     <navigation>
       <ul>
+        <li>User: <?= $_SESSION['username'] ?? ''; // php 7.0 ?></li>
         <li><a href="<? echo url_for('/staff/index.php');?>">Menu</a></li>
+        <li><a href="<? echo url_for('/staff/logout.php');?>">Logout</a></li>
       </ul>
     </navigation>
+    <?php echo display_session_message(); ?> 
