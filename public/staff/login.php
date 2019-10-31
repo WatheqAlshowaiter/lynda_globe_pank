@@ -5,14 +5,45 @@ $errors = [];
 $username = '';
 $password = '';
 
-if(is_post_request()) {
+// example for demo testing
+// username: johnqpublic
+// password: 12345678912aB!
+
+
+if (is_post_request()) {
 
   $username = $_POST['username'] ?? '';
   $password = $_POST['password'] ?? '';
 
-  $_SESSION['username'] = $username;
+  // validations 
+  if (is_blank($username)) {
+    $errors[] = "Username cannot be blank";
+  }
 
-  redirect_to(url_for('/staff/index.php'));
+  if (is_blank($password)) {
+    $errors[] = "Password cannot be blank";
+  }
+  // if there were no errors, try to login
+  if (empty($errors)) {
+    // Using one variable ensures that msg is the same
+    $login_failure_msg = "Log in was unsuccessful.";
+    $admin = find_admin_by_username($username);
+    if ($admin) {
+      if (password_verify($password, $admin['hashed_password'])) {
+        // password match 
+        log_in_admin($admin);
+        redirect_to(url_for('/staff/index.php'));
+      } else {
+        // username found, but password does not match
+        // $errors[] = $login_failure_msg;
+        $errors[] = "username found, but password does not match";
+      }
+    } else {
+      // no username found
+      // $errors[] = $login_failure_msg; 
+      $errors[] = "// no username found";
+    }
+  }
 }
 
 ?>
@@ -30,7 +61,7 @@ if(is_post_request()) {
     <input type="text" name="username" value="<?php echo h($username); ?>" /><br />
     Password:<br />
     <input type="password" name="password" value="" /><br />
-    <input type="submit" name="submit" value="Submit"  />
+    <input type="submit" name="submit" value="Submit" />
   </form>
 
 </div>

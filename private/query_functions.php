@@ -354,7 +354,7 @@ function insert_admin($admin)
     return $errors;
   }
 
-  $hashed_password = $admin['password']; // we will do hasing
+  $hashed_password = password_hash( $admin['password'], PASSWORD_BCRYPT);// we can use PASSWORD_DEFAULT
 
   $sql = "INSERT INTO admins ";
   $sql .= "(first_name, last_name, email, username, hashed_password) ";
@@ -455,6 +455,21 @@ function find_admin_by_id($id)
   return $admin;  
 }
 
+function find_admin_by_username($username)
+{
+  global $db;
+
+  $sql  = "SELECT * FROM admins ";
+  $sql .= "WHERE username = '" . db_escape($db, $username) . "' ";
+  $sql .= "LIMIT 1";
+
+  $result = mysqli_query($db, $sql);
+  confirm_result_set($result);
+  $admin = mysqli_fetch_assoc($result);
+  mysqli_free_result($result); 
+  return $admin;  
+}
+
 function update_admin($admin) {
   global $db;
 
@@ -463,7 +478,7 @@ function update_admin($admin) {
     return $errors;
   }
 
-  $hashed_password = $admin['password'];
+  $hashed_password = password_hash( $admin['password'], PASSWORD_BCRYPT);// we can use PASSWORD_DEFAULT
 
   $sql = "UPDATE admins SET ";
   $sql .= "first_name='" . db_escape($db, $admin['first_name']) . "', ";
