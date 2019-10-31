@@ -49,7 +49,7 @@ function confirm_result_set($result_set)
  * @param string $string
  * @return srting
  */
-function escape_db($connection, $string){
+function db_escape($connection, $string){
 	return mysqli_real_escape_string($connection, $string); 
 }
 
