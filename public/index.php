@@ -4,9 +4,9 @@
 $preview = false;
 if (isset($_GET['preview'])) {
   // previwing should required admin to logged in
-  $preview = $_GET['preview'] == 'true' ? true : false; // ternary operators 
+  $preview = $_GET['preview'] == 'true' && is_logged_in() ? true : false; // ternary operators 
 }
-$visible = !$preview;
+$visible = !$preview; 
 ?>
 <?php
 if (isset($_GET["id"])) {

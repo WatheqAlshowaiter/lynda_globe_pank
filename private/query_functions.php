@@ -354,7 +354,7 @@ function insert_admin($admin)
     return $errors;
   }
 
-  $hashed_password = password_hash( $admin['password'], PASSWORD_BCRYPT);// we can use PASSWORD_DEFAULT
+  $hashed_password = password_hash($admin['password'], PASSWORD_BCRYPT); // we can use PASSWORD_DEFAULT
 
   $sql = "INSERT INTO admins ";
   $sql .= "(first_name, last_name, email, username, hashed_password) ";
@@ -365,7 +365,7 @@ function insert_admin($admin)
   $sql .= "'" . db_escape($db, $admin['username']) . "', ";
   $sql .= "'" . db_escape($db, $hashed_password) . "' ";
   $sql .= ")";
-  
+
   $result = mysqli_query($db, $sql);
   // For INSERT statements, $result is true/false
   if ($result) {
@@ -379,9 +379,11 @@ function insert_admin($admin)
 }
 
 
-function validate_admin($admin)
+function validate_admin($admin, $options = [])
 {
   $errors = [];
+  $password_required = $options['password_required'] ?? true;
+
 
   // first name (not blank betwen 2 - 255 chars)
   if (is_blank($admin['first_name'])) {
@@ -413,28 +415,32 @@ function validate_admin($admin)
   } elseif (!has_unique_username($admin['username'], $admin['id'] ?? 0)) {
     $errors[] = "Username not allowed. Try another.";
   }
-  // password (not blank, (12<=pass), at least one UPPERCASR, one lowercase, one number)
-  if (is_blank($admin['password'])) {
-    $errors[] = "Password cannot be blank";
-  } elseif (!has_length($admin['password'], ['min' => 12])) {
-    $errors[] = "Password must contain 12 or more characters";
-  } elseif (!preg_match('/[A-Z]/', $admin['password'])) {
-    $errors[] = "Password must contain at least 1 UPPERCASE letter";
-  } else if (!preg_match('/[a-z]/', $admin['password'])) {
-    $errors[] = "Password must contain at least 1 lowercase letter";
-  } else if (!preg_match('/[0-9]/', $admin['password'])) {
-    $errors[] = "Password must contain at least 1 number";
-  } elseif (!preg_match('/[^A-Za-z0-9\s]/', $admin['password'])) {
-    $errors[] = "Password must contain at least 1 symbol";
+
+  if ($password_required) {
+    // password (not blank, (12<=pass), at least one UPPERCASR, one lowercase, one number)
+    if (is_blank($admin['password'])) {
+      $errors[] = "Password cannot be blank";
+    } elseif (!has_length($admin['password'], ['min' => 12])) {
+      $errors[] = "Password must contain 12 or more characters";
+    } elseif (!preg_match('/[A-Z]/', $admin['password'])) {
+      $errors[] = "Password must contain at least 1 UPPERCASE letter";
+    } else if (!preg_match('/[a-z]/', $admin['password'])) {
+      $errors[] = "Password must contain at least 1 lowercase letter";
+    } else if (!preg_match('/[0-9]/', $admin['password'])) {
+      $errors[] = "Password must contain at least 1 number";
+    } elseif (!preg_match('/[^A-Za-z0-9\s]/', $admin['password'])) {
+      $errors[] = "Password must contain at least 1 symbol";
+    }
+
+    // confirm password (not blank, match password)
+    if (is_blank($admin['confirm_password'])) {
+      $errors[] = "Confirm password cannot be blank.";
+    } elseif ($admin['password'] !== $admin['confirm_password']) {
+      $errors[] = "Password and confirm password must match.";
+    }
   }
 
 
-  // confirm password (not blank, match password)
-  if (is_blank($admin['confirm_password'])) {
-    $errors[] = "Confirm password cannot be blank.";
-  } elseif ($admin['password'] !== $admin['confirm_password']) {
-    $errors[] = "Password and confirm password must match.";
-  }
 
   return $errors;
 }
@@ -451,8 +457,8 @@ function find_admin_by_id($id)
   $result = mysqli_query($db, $sql);
   confirm_result_set($result);
   $admin = mysqli_fetch_assoc($result);
-  mysqli_free_result($result); 
-  return $admin;  
+  mysqli_free_result($result);
+  return $admin;
 }
 
 function find_admin_by_username($username)
@@ -466,32 +472,38 @@ function find_admin_by_username($username)
   $result = mysqli_query($db, $sql);
   confirm_result_set($result);
   $admin = mysqli_fetch_assoc($result);
-  mysqli_free_result($result); 
-  return $admin;  
+  mysqli_free_result($result);
+  return $admin;
 }
 
-function update_admin($admin) {
+function update_admin($admin)
+{
   global $db;
 
-  $errors = validate_admin($admin);
+  $password_sent  = !is_blank($admin['password']);
+
+
+  $errors = validate_admin($admin, ['password_required' => $password_sent]);
   if (!empty($errors)) {
     return $errors;
   }
 
-  $hashed_password = password_hash( $admin['password'], PASSWORD_BCRYPT);// we can use PASSWORD_DEFAULT
+  $hashed_password = password_hash($admin['password'], PASSWORD_BCRYPT); // we can use PASSWORD_DEFAULT
 
   $sql = "UPDATE admins SET ";
   $sql .= "first_name='" . db_escape($db, $admin['first_name']) . "', ";
   $sql .= "last_name='" . db_escape($db, $admin['last_name']) . "', ";
   $sql .= "email='" . db_escape($db, $admin['email']) . "', ";
-  $sql .= "hashed_password='" . db_escape($db, $hashed_password) . "',";
+  if ($password_sent) {
+    $sql .= "hashed_password='" . db_escape($db, $hashed_password) . "', ";
+  }
   $sql .= "username='" . db_escape($db, $admin['username']) . "' ";
   $sql .= "WHERE id='" . db_escape($db, $admin['id']) . "' ";
   $sql .= "LIMIT 1";
   $result = mysqli_query($db, $sql);
 
   // For UPDATE statements, $result is true/false
-  if($result) {
+  if ($result) {
     return true;
   } else {
     // UPDATE failed
@@ -501,7 +513,8 @@ function update_admin($admin) {
   }
 }
 
-function delete_admin($admin) {
+function delete_admin($admin)
+{
   global $db;
 
   $sql = "DELETE FROM admins ";
@@ -510,7 +523,7 @@ function delete_admin($admin) {
   $result = mysqli_query($db, $sql);
 
   // For DELETE statements, $result is true/false
-  if($result) {
+  if ($result) {
     return true;
   } else {
     // DELETE failed
