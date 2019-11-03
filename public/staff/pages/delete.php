@@ -8,14 +8,13 @@ if (!isset($_GET['id'])) {
   redirect_to(url_for('/staff/pages/index.php'));
 }
 $id = $_GET['id'];
+$page = find_page_by_id($id);
 
 if (is_post_request()) {
 
   $result = delete_page($id);
-  redirect_to(url_for('/staff/pages/index.php'));
-} else {
-  $page = find_page_by_id($id);
-}
+  redirect_to(url_for("/staff/subjects/show.php?id=" . h(u($page['subject_id']))));
+} 
 
 ?>
 
@@ -24,7 +23,7 @@ if (is_post_request()) {
 
 <div id="content">
 
-  <a class="back-link" href="<?php echo url_for('/staff/pages/index.php'); ?>">&laquo; Back to List</a>
+<a class="back-link" href="<?php echo url_for('/staff/subjects/show.php?id=' . h(u($page['subject_id']))); ?>">&laquo; Back to List</a>
 
   <div class="page delete">
     <h1>Delete Page</h1>
